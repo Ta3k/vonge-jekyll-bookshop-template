@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 🔹 Node (Bookshop wymaga npm)
+      # 🔹 NODE (package.json jest w root)
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -32,24 +32,26 @@ jobs:
       - name: Install NPM dependencies
         run: npm install
 
-      # 🔹 Ruby + Bundler
+      # 🔹 RUBY (Gemfile jest w site/)
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2
-          bundler-cache: true
 
-      # 🔹 Build Jekyll 4.x (z Gemfile)
-      - name: Build site
+      - name: Install Gems
+        run: bundle install
+        working-directory: site
+
+      - name: Build Jekyll site
         run: bundle exec jekyll build
+        working-directory: site
         env:
           JEKYLL_ENV: production
 
-      # 🔹 Upload generated site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./site/_site
+          path: site/_site
 
   deploy:
     needs: build
